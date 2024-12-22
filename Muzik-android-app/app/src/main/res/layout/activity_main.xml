@@ -1,0 +1,90 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.MainActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:elevation="4dp"
+            android:title="@string/app_name"
+            android:titleTextColor="@android:color/black"
+            app:menu="@menu/toolbar_menu" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabIndicatorColor="@android:color/holo_blue_light"
+            app:tabTextColor="@android:color/darker_gray"
+            app:tabSelectedTextColor="@android:color/holo_blue_light"
+            app:tabMode="fixed"
+            app:tabGravity="fill"
+            app:tabPaddingStart="12dp"
+            app:tabPaddingEnd="12dp" >
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_song"
+                android:contentDescription="@string/tab_for_home"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="@string/song"
+                android:icon="@drawable/queue_music_24dp_5f6368"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:textSize="12sp"
+                />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_album"
+                android:contentDescription="@string/tab_for_search"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:icon="@drawable/album_24dp_5f6368"
+                android:text="@string/album"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:textSize="12sp"/>
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_playlist"
+                android:contentDescription="@string/tab_for_profile"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:icon="@drawable/library_music_24dp_5f6368"
+                android:text="@string/playlist"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:textSize="12sp"/>
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_user"
+                android:contentDescription="@string/tab_for_profile"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:icon="@drawable/interpreter_mode_24dp_5f6368"
+                android:text="@string/artist"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:textSize="12sp"/>
+
+        </com.google.android.material.tabs.TabLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
