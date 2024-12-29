@@ -3,12 +3,18 @@ package com.hd.muzik.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.hd.muzik.R;
+import com.hd.muzik.adapter.AlbumAdapter;
+import com.hd.muzik.adapter.ArtistAdapter;
+import com.hd.muzik.services.ArtistViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,7 +31,8 @@ public class ArtistFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    private RecyclerView recyclerView;
+    private ArtistAdapter artistAdapter;
     public ArtistFragment() {
         // Required empty public constructor
     }
@@ -60,7 +67,20 @@ public class ArtistFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_artist, container, false);
+        View v = inflater.inflate(R.layout.fragment_artist_list, container, false);
+        RecyclerView recyclerView = v.findViewById(R.id.recycler_view_artist);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        ArtistViewModel artistViewModel = new ViewModelProvider(this).get(ArtistViewModel.class);
+        artistViewModel.getArtists().observe(getViewLifecycleOwner(), artists -> {
+            if(artists != null)
+                if(artistAdapter == null){
+                    artistAdapter = new ArtistAdapter();
+                    recyclerView.setAdapter(artistAdapter);
+                }
+            artistAdapter.setArtists(artists);
+        });
+        artistViewModel.fetchArtist();
+        return v;
     }
 }

@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.SongFragment">
+    tools:context=".fragments.SongListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+        android:id="@+id/recycler_view_song"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="8dp"

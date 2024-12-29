@@ -1,9 +1,6 @@
 <resources>
     <string name="app_name">muzik</string>
     <string name="my_music">My Music</string>
-    <string name="tab_for_search">Tab for Search</string>
-    <string name="tab_for_profile">Tab for Profile</string>
-    <string name="tab_for_home">Tab for Home</string>
     <string name="profile">Profile</string>
     <string name="search">Search</string>
     <string name="home">Home</string>
@@ -12,6 +9,45 @@
     <string name="playlist">Playlist</string>
     <string name="artist">Artist</string>
     <string name="menu">Menu</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="play_button">Play Button</string>
+    <string name="song_title">Song Title</string>
+    <string name="artist_name">Artist Name</string>
+    <string name="album_image_cover">Album image cover</string>
+    <string name="tab_for_playlist">Tab for playlist</string>
+
+    <string name="tab_for_artist">Tab for artist</string>
+
+    <string name="tab_for_album">Tab for album</string>
+
+    <string name="tab_for_song">Tab for song</string>
+    <string name="username">username</string>
+    <string name="login">Login</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+
+    <string name="image_avatar">Image avatar</string>
+    <string name="search_bar">search</string>
+    <string name="created_date_user">Ngày tạo tài khoản:</string>
+    <string name="fullname_user">Họ và tên:</string>
+    <string name="image_song">Hình ảnh bài hát</string>
+    <string name="play_song">Phát nhạc</string>
+    <string name="album_show">Open album</string>
+    <string name="album_name">Album Name</string>
+    <string name="repeat">Phát lại nhạc</string>
+    <string name="favorite">Yêu thích</string>
+    <string name="search_bar_hint">Tìm kiếm nhạc, artist, album:</string>
+    <string name="artist_image">Artist Image</string>
 </resources>

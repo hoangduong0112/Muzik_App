@@ -3,12 +3,18 @@ package com.hd.muzik.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.hd.muzik.R;
+import com.hd.muzik.adapter.AlbumAdapter;
+import com.hd.muzik.adapter.AlbumViewHolder;
+import com.hd.muzik.services.AlbumViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,6 +32,9 @@ public class AlbumFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private RecyclerView recyclerView;
+    private AlbumAdapter albumAdapter;
+    private AlbumViewHolder albumViewHolder;
     public AlbumFragment() {
         // Required empty public constructor
     }
@@ -51,6 +60,7 @@ public class AlbumFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -58,9 +68,27 @@ public class AlbumFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_album, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_album_list, container, false);
+
+        recyclerView = view.findViewById(R.id.recycler_view_album);
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);  // 2 cột
+        recyclerView.setLayoutManager(layoutManager);
+
+
+        AlbumViewModel albumViewModel = new ViewModelProvider(this).get(AlbumViewModel.class);
+        albumViewModel.getAlbums().observe(getViewLifecycleOwner(), albums -> {
+            if (albums != null) {
+                if (albumAdapter == null) {
+                    albumAdapter = new AlbumAdapter();
+                    recyclerView.setAdapter(albumAdapter);
+                }
+            }
+            albumAdapter.setAlbums(albums);
+        });
+        albumViewModel.fetchAlbums();
+        return view;
     }
+
+
 }

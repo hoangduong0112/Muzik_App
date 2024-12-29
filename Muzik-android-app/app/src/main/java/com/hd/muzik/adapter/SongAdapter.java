@@ -10,18 +10,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hd.muzik.R;
 import com.hd.muzik.model.Song;
+import com.hd.muzik.utils.MusicPlayerUtils;
+import com.hd.muzik.utils.OnSongClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
     private List<Song> songs = new ArrayList<>();
+    private final OnSongClickListener listener;
+
+    public SongAdapter(OnSongClickListener listener) {
+        this.listener = listener;
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     public void setSongs(List<Song> newSongs) {
         this.songs.clear();
         this.songs.addAll(newSongs);
-        notifyDataSetChanged(); // Notify RecyclerView when data changes
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -36,6 +44,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
         Song song = songs.get(position);
         holder.title.setText(song.getName());
         holder.artist.setText(song.getArtistName());
+        holder.itemView.setOnClickListener(v -> {
+            listener.onSongClick(song);
+            MusicPlayerUtils.playSong(holder.itemView.getContext(), song.getSongUrl());
+        });
     }
 
     @Override

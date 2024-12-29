@@ -1,7 +1,9 @@
 package com.hd.muzik.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,15 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.hd.muzik.R;
-import com.hd.muzik.adapter.SongAdapter;
-import com.hd.muzik.services.SongViewModel;
+import com.hd.muzik.adapter.SongListAdapter;
+import com.hd.muzik.model.Song;
+import com.hd.muzik.services.OnSongClickListener;
+import com.hd.muzik.services.SongListViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link SongFragment#newInstance} factory method to
+ * Use the {@link SongListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SongFragment extends Fragment {
+public class SongListFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -32,9 +36,10 @@ public class SongFragment extends Fragment {
     private String mParam2;
 
     private RecyclerView recyclerView;
-    private SongAdapter songAdapter;
-    private SongViewModel songViewModel;
-    public SongFragment() {
+    private SongListAdapter songListAdapter;
+    private OnSongClickListener onSongClickListener;
+
+    public SongListFragment() {
         // Required empty public constructor
     }
 
@@ -47,8 +52,8 @@ public class SongFragment extends Fragment {
      * @return A new instance of fragment SongFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SongFragment newInstance(String param1, String param2) {
-        SongFragment fragment = new SongFragment();
+    public static SongListFragment newInstance(String param1, String param2) {
+        SongListFragment fragment = new SongListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -65,28 +70,42 @@ public class SongFragment extends Fragment {
         }
     }
 
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnSongClickListener) {
+            onSongClickListener = (OnSongClickListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement OnSongClickListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        onSongClickListener = null;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_song, container, false);
+        View view = inflater.inflate(R.layout.fragment_song_list, container, false);
 
-        recyclerView = view.findViewById(R.id.recycler_view);
+        recyclerView = view.findViewById(R.id.recycler_view_song);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Initialize ViewModel
-        songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
-
-        // Set up observer to observe data changes from ViewModel
-        songViewModel.getSongs().observe(getViewLifecycleOwner(), songs -> {
+        SongListViewModel songListViewModel = new ViewModelProvider(this).get(SongListViewModel.class);
+        songListViewModel.getSongs().observe(getViewLifecycleOwner(), songs -> {
             if (songs != null) {
-                // Initialize SongAdapter and set data when songs are available
-                if (songAdapter == null) {
-                    songAdapter = new SongAdapter();
-                    recyclerView.setAdapter(songAdapter);
+                if (songListAdapter == null) {
+                    songListAdapter = new SongListAdapter(onSongClickListener);
+                    recyclerView.setAdapter(songListAdapter);
                 }
-                songAdapter.setSongs(songs);
+                songListAdapter.setSongs(songs);
             }
         });
-        songViewModel.fetchSongs();
+
+        songListViewModel.fetchSongs();
 
         return view;
     }

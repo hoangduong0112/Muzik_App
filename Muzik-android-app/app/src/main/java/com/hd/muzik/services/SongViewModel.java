@@ -37,4 +37,21 @@ public class SongViewModel extends ViewModel {
         });
     }
 
+    public void fetchSongsByKw(String kw) {
+        SongApi songApi = RetrofitInstance.getInstance().create(SongApi.class);
+        songApi.getSongsByKw(kw).enqueue(new Callback<List<Song>>() {
+            @Override
+            public void onResponse(Call<List<Song>> call, Response<List<Song>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    songs.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Song>> call, Throwable t) {
+                songs.postValue(null);
+            }
+        });
+    }
+
 }
