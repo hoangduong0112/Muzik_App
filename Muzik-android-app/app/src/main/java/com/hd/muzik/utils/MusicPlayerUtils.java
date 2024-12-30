@@ -17,8 +17,10 @@ public class MusicPlayerUtils {
     private static final String TAG = "MusicPlayerUtils";
 
     public interface MusicPlayerListener {
+        void onSongPrepared(); // Được gọi khi bài hát đã sẵn sàng và bắt đầu phát
         void onSongCompleted();
         void onError(String errorMessage);
+        void onPlayPauseChanged(boolean isPlaying);
     }
 
     private static MusicPlayerListener listener;
@@ -28,36 +30,34 @@ public class MusicPlayerUtils {
     }
 
     public static void playSong(Context context, Song song) {
-        stopSong(); // Dừng bài hát hiện tại nếu có
+        stopSong(); // Dừng bài hát nếu đang phát
 
         try {
             mediaPlayer = new MediaPlayer();
-            currentSong = song; // Cập nhật bài hát hiện tại
+            currentSong = song; // Cập nhật bài hát
 
-            mediaPlayer.setOnPreparedListener(MediaPlayer::start);
+            mediaPlayer.setOnPreparedListener(mp -> {
+                mp.start(); // Bắt đầu phát nhạc
+                if (listener != null) {
+                    listener.onSongPrepared(); // Thông báo bài hát đã chuẩn bị
+                    listener.onPlayPauseChanged(true); // Thông báo đang phát nhạc
+                }
+            });
+
             mediaPlayer.setOnCompletionListener(mp -> {
-                Log.d(TAG, "Song completed");
-                if (listener != null) listener.onSongCompleted();
-            });
-            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                String errorMessage = "MediaPlayer error: what=" + what + ", extra=" + extra;
-                Log.e(TAG, errorMessage);
-                if (listener != null) listener.onError(errorMessage);
-                return true;
+                if (listener != null) listener.onSongCompleted(); // Bài hát hoàn thành
+                if (listener != null) listener.onPlayPauseChanged(false); // Thông báo nút play
             });
 
-            if (song.getSongUrl().startsWith("http://") || song.getSongUrl().startsWith("https://")) {
-                mediaPlayer.setDataSource(song.getSongUrl());
-            } else {
-                mediaPlayer.setDataSource(context, Uri.parse(song.getSongUrl()));
-            }
-
+            mediaPlayer.setDataSource(context, Uri.parse(song.getSongUrl()));
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
-            Log.e(TAG, "Error playing song: " + e.getMessage(), e);
-            if (listener != null) listener.onError("Error playing song: " + e.getMessage());
+            if (listener != null) listener.onError("Error: " + e.getMessage());
         }
     }
+
+
+
 
     public static void stopSong() {
         if (mediaPlayer != null) {
@@ -76,16 +76,14 @@ public class MusicPlayerUtils {
     public static void pauseSong() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
+            if (listener != null) listener.onPlayPauseChanged(false); // Cập nhật trạng thái nút pause
         }
     }
 
     public static void resumeSong() {
         if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
-            try {
-                mediaPlayer.start();
-            } catch (IllegalStateException e) {
-                Log.e(TAG, "Error resuming song: " + e.getMessage(), e);
-            }
+            mediaPlayer.start();
+            if (listener != null) listener.onPlayPauseChanged(true); // Cập nhật trạng thái nút play
         }
     }
 
@@ -101,6 +99,15 @@ public class MusicPlayerUtils {
         }
     }
 
+    public static void togglePlayPause(Context context) {
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying()) {
+                pauseSong(); // Dừng bài hát nếu đang phát
+            } else {
+                resumeSong(); // Tiếp tục bài hát nếu đang dừng
+            }
+        }
+    }
     public static int getDuration() {
         if (mediaPlayer != null) {
             return mediaPlayer.getDuration(); // Trả về tổng độ dài (ms)
@@ -111,7 +118,7 @@ public class MusicPlayerUtils {
 
     public static int getCurrentPosition() {
         if (mediaPlayer != null) {
-            return mediaPlayer.getCurrentPosition(); // Trả về vị trí hiện tại (ms)
+            return mediaPlayer.getCurrentPosition();
         }
         return 0;
     }

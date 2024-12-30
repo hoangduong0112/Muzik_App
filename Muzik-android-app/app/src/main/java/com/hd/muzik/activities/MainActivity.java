@@ -24,14 +24,16 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.hd.muzik.R;
 import com.hd.muzik.adapter.MainViewPaperAdapter;
+import com.hd.muzik.fragments.ProfileFragment;
 import com.hd.muzik.fragments.SongDetailFragment;
 import com.hd.muzik.model.Song;
 import com.hd.muzik.services.MusicPlayerViewModel;
-import com.hd.muzik.services.OnSongClickListener;
 import com.hd.muzik.utils.MusicPlayerUtils;
+import com.hd.muzik.utils.OnSongClickListener;
 import com.hd.muzik.utils.TokenManager;
 
-public class MainActivity extends AppCompatActivity implements OnSongClickListener {
+public class MainActivity extends AppCompatActivity implements
+        OnSongClickListener, ProfileFragment.LogoutListener {
     private MaterialToolbar topAppBar;
     private BottomNavigationView bottomNavigationView;
     private ViewPager2 viewPager;
@@ -39,7 +41,9 @@ public class MainActivity extends AppCompatActivity implements OnSongClickListen
     private ImageView albumArt;
     private LinearProgressIndicator playerProgress;
     private ImageButton playPauseButton;
-    private LinearLayout playerController; // Đảm bảo khởi tạo LinearLayout này
+    private LinearLayout playerController;
+    private MainViewPaperAdapter adapter;
+    private TokenManager tokenManager;
 
     private MusicPlayerViewModel musicPlayerViewModel;
     @SuppressLint("NonConstantResourceId")
@@ -50,8 +54,39 @@ public class MainActivity extends AppCompatActivity implements OnSongClickListen
 
         initUI();
         setupBottomNavigationAndViewPager();
-
+        checkTokenState();
         musicPlayerViewModel = new ViewModelProvider(this).get(MusicPlayerViewModel.class);
+        musicPlayerViewModel.getProgress().observe(this, progress -> {
+            playerProgress.setProgress(progress);
+        });
+
+        playPauseButton.setOnClickListener(v -> togglePlayPause());
+
+        MusicPlayerUtils.setMusicPlayerListener(new MusicPlayerUtils.MusicPlayerListener() {
+            @Override
+            public void onSongPrepared() {
+                startUpdatingProgress();
+            }
+
+            @Override
+            public void onSongCompleted() {
+                playPauseButton.setImageResource(R.drawable.play_arrow_24dp_000000_fill0_wght400_grad0_opsz24);
+                stopUpdatingProgress();
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+            }
+            @Override
+            public void onPlayPauseChanged(boolean isPlaying) {
+                // Cập nhật trạng thái nút play/pause trong MainActivity
+                if (isPlaying) {
+                    playPauseButton.setImageResource(R.drawable.pause_24dp_000000_fill0_wght400_grad0_opsz24);
+                } else {
+                    playPauseButton.setImageResource(R.drawable.play_arrow_24dp_000000_fill0_wght400_grad0_opsz24);
+                }
+            }
+        });
 
         playPauseButton.setOnClickListener(v -> togglePlayPause());
 
@@ -83,15 +118,19 @@ public class MainActivity extends AppCompatActivity implements OnSongClickListen
         viewPager = findViewById(R.id.view_pager_main);
         playerController = findViewById(R.id.player_controller);
         setSupportActionBar(topAppBar);
+        tokenManager = new TokenManager(this);
+
+        // Initialize the class-level adapter instead of declaring a local one
+        adapter = new MainViewPaperAdapter(this);
+        viewPager.setAdapter(adapter);  // Set the adapter to the viewPager
 
         playerController.setOnClickListener(view -> {
             showSongDetailFragment();
         });
     }
 
+
     private void setupBottomNavigationAndViewPager() {
-        MainViewPaperAdapter adapter = new MainViewPaperAdapter(this);
-        viewPager.setAdapter(adapter);
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -145,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements OnSongClickListen
             stopUpdatingProgress();
         } else {
             MusicPlayerUtils.resumeSong();
-            startUpdatingProgress(); // Đảm bảo gọi hàm này
+            startUpdatingProgress();
         }
         updatePlayerUI(MusicPlayerUtils.getCurrentSong(), MusicPlayerUtils.isPlaying());
     }
@@ -208,30 +247,40 @@ public class MainActivity extends AppCompatActivity implements OnSongClickListen
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // Giải phóng tài nguyên nếu cần
     }
 
     private final Handler progressHandler = new Handler();
     private final Runnable progressUpdater = new Runnable() {
         @Override
         public void run() {
-            progressHandler.post(() -> {
-                if (MusicPlayerUtils.isPlaying()) {
-                    int duration = MusicPlayerUtils.getDuration();
-                    int currentPosition = MusicPlayerUtils.getCurrentPosition();
+            if (MusicPlayerUtils.isPlaying()) {
+                int duration = MusicPlayerUtils.getDuration();
+                int currentPosition = MusicPlayerUtils.getCurrentPosition();
 
-                    if (duration > 0) {
-                        int progress = (currentPosition * 100) / duration;
-                        playerProgress.setProgress(progress);
+                if (duration > 0) {
+                    int progress = (currentPosition * 100) / duration;
+                    playerProgress.setProgress(progress);
 
-                        // Cập nhật ViewModel
-                        musicPlayerViewModel.setProgress(progress);
-                    }
-                    progressHandler.postDelayed(this, 500);
+                    // Cập nhật ViewModel
+                    musicPlayerViewModel.setProgress(progress);
                 }
-            });
+
+                progressHandler.postDelayed(this, 500); // Tiếp tục lặp lại mỗi 500ms
+            }
         }
     };
 
 
+    @Override
+    public void onLogout() {
+        tokenManager.clearToken();
+        adapter.updateTokenState(false);
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(0);
+    }
+
+    private void checkTokenState() {
+        boolean isTokenValid = tokenManager.isTokenValid();
+        adapter.updateTokenState(isTokenValid);
+    }
 }

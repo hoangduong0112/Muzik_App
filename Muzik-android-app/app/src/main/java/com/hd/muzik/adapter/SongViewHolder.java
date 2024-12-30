@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hd.muzik.R;
 import com.hd.muzik.model.Song;
-import com.hd.muzik.services.OnSongClickListener;
+import com.hd.muzik.utils.OnSongClickListener;
 
 public class SongViewHolder extends RecyclerView.ViewHolder {
     TextView title;

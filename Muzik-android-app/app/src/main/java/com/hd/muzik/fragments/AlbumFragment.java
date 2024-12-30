@@ -72,7 +72,7 @@ public class AlbumFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_album_list, container, false);
 
         recyclerView = view.findViewById(R.id.recycler_view_album);
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);  // 2 cột
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);  // 2 cột
         recyclerView.setLayoutManager(layoutManager);
 
 

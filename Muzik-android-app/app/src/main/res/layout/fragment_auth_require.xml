@@ -57,19 +57,12 @@
 
             <!-- Buttons -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_login"
+                android:id="@+id/btn_nav_to_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Đăng nhập"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_marginBottom="8dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_register"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Đăng ký"
-                style="@style/Widget.Material3.Button.OutlinedButton"/>
 
         </LinearLayout>
 

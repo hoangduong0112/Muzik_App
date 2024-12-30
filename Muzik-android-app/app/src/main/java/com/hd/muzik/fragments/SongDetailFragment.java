@@ -25,6 +25,7 @@ import com.hd.muzik.retrofit.RetrofitInstance;
 import com.hd.muzik.retrofit.SongApi;
 import com.hd.muzik.services.MusicPlayerViewModel;
 import com.hd.muzik.utils.ImageLoader;
+import com.hd.muzik.utils.MusicPlayerUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -40,20 +41,17 @@ import retrofit2.Response;
  * Use the {@link SongDetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SongDetailFragment extends Fragment {
+public class SongDetailFragment extends Fragment implements MusicPlayerUtils.MusicPlayerListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_SONG_ID  = "song_id";
 
-    private static Song song;
     private MediaPlayer mediaPlayer;
-    private boolean isPlaying = false;
     private MusicPlayerViewModel musicPlayerViewModel;
     private boolean isRepeat = false;
     private boolean isFavorite = false;
-    private LinearProgressIndicator progressIndicator;
-    private Handler handler;
+    private ImageButton buttonPlayPause;
     public SongDetailFragment() {
         // Required empty public constructor
     }
@@ -86,7 +84,7 @@ public class SongDetailFragment extends Fragment {
 
         TextView songTitle = view.findViewById(R.id.song_detail_title);
         TextView songArtist = view.findViewById(R.id.song_detail_artist);
-        ImageButton playPauseButton = view.findViewById(R.id.button_play_pause);
+        buttonPlayPause = view.findViewById(R.id.button_play_pause);
         LinearProgressIndicator progressIndicator = view.findViewById(R.id.progress_indicator);
 
         // Lắng nghe thay đổi từ ViewModel
@@ -99,7 +97,7 @@ public class SongDetailFragment extends Fragment {
 
         musicPlayerViewModel.getIsPlaying().observe(getViewLifecycleOwner(), isPlaying -> {
             if (isPlaying != null) {
-                playPauseButton.setImageResource(isPlaying ? R.drawable.pause_24dp_000000_fill0_wght400_grad0_opsz24
+                buttonPlayPause.setImageResource(isPlaying ? R.drawable.pause_24dp_000000_fill0_wght400_grad0_opsz24
                         : R.drawable.play_arrow_24dp_000000_fill0_wght400_grad0_opsz24);
             }
         });
@@ -110,42 +108,18 @@ public class SongDetailFragment extends Fragment {
             }
         });
 
-        playPauseButton.setOnClickListener(v -> togglePlayPause(playPauseButton));
+        MusicPlayerUtils.setMusicPlayerListener(this);
+
+        buttonPlayPause.setOnClickListener(v -> togglePlayPause());
 
         return view;
     }
 
-    private void setupMediaPlayer() {
-        try {
-            mediaPlayer.setDataSource(song.getSongUrl());
-            mediaPlayer.setOnPreparedListener(mp -> progressIndicator.setMax(mp.getDuration()));
-            mediaPlayer.prepareAsync();
 
-            mediaPlayer.setOnCompletionListener(mp -> {
-                if (!isRepeat) {
-                    togglePlayPause(null);
-                } else {
-                    mediaPlayer.seekTo(0);
-                    mediaPlayer.start();
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void togglePlayPause() {
+        MusicPlayerUtils.togglePlayPause(requireContext()); // Thay đổi trạng thái play/pause trong MusicPlayerUtils
     }
 
-    private void togglePlayPause(ImageButton button) {
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            isPlaying = false;
-            if (button != null) button.setImageResource(R.drawable.play_arrow_24dp_000000_fill0_wght400_grad0_opsz24);
-        } else {
-            mediaPlayer.start();
-            isPlaying = true;
-            if (button != null) button.setImageResource(R.drawable.pause_24dp_000000_fill0_wght400_grad0_opsz24);
-            updateProgress();
-        }
-    }
 
     private void toggleRepeat(ImageButton button) {
         isRepeat = !isRepeat;
@@ -159,15 +133,6 @@ public class SongDetailFragment extends Fragment {
                 : R.drawable.favorite_24dp_000000_fill0_wght400_grad0_opsz24);
     }
 
-    private void updateProgress() {
-        handler.postDelayed(() -> {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                progressIndicator.setProgress(mediaPlayer.getCurrentPosition());
-                updateProgress();
-            }
-        }, 500);
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -177,6 +142,31 @@ public class SongDetailFragment extends Fragment {
             }
             mediaPlayer.release();
             mediaPlayer = null;
+        }
+    }
+
+    @Override
+    public void onSongPrepared() {
+
+    }
+
+    @Override
+    public void onSongCompleted() {
+        buttonPlayPause.setImageResource(R.drawable.play_arrow_24dp_000000_fill0_wght400_grad0_opsz24);
+    }
+
+    @Override
+    public void onError(String errorMessage) {
+
+    }
+
+    @Override
+    public void onPlayPauseChanged(boolean isPlaying) {
+        // Cập nhật trạng thái nút play/pause trong SongDetailFragment
+        if (isPlaying) {
+            buttonPlayPause.setImageResource(R.drawable.pause_24dp_000000_fill0_wght400_grad0_opsz24);
+        } else {
+            buttonPlayPause.setImageResource(R.drawable.play_arrow_24dp_000000_fill0_wght400_grad0_opsz24);
         }
     }
 }

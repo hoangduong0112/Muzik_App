@@ -17,7 +17,7 @@ public class Album implements Serializable {
     private int id;
     private String name;
     private String url;
-    private List<Integer> songs;
+    private List<Song> songs;
     private int countSong;
     private String artistName;
 }

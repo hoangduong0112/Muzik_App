@@ -1,15 +1,18 @@
 package com.hd.muzik.adapter;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hd.muzik.R;
 import com.hd.muzik.model.Album;
+import com.hd.muzik.model.Song;
 import com.hd.muzik.utils.ImageLoader;
 
 import java.util.ArrayList;
@@ -17,14 +20,13 @@ import java.util.List;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder> {
     private List<Album> albums = new ArrayList<>();
+    private SongAdapter songAdapter; // Để chứa và quản lý danh sách bài hát
 
-//    public AlbumAdapter(Context context, List<Album> newAlbums) {
-//        this.albums = newAlbums;
-//    }
     @SuppressLint("NotifyDataSetChanged")
     public void setAlbums(List<Album> newAlbums) {
         this.albums.clear();
         this.albums.addAll(newAlbums);
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -43,10 +45,30 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder> {
         if (album.getUrl() != null) {
             ImageLoader.loadImage(holder.imageUrl, album.getUrl());
         }
+
+        holder.playAlbumButton.setOnClickListener(v -> {
+            // Hiển thị/ẩn danh sách bài hát
+            if (holder.songListContainer.getVisibility() == View.GONE) {
+                holder.songListContainer.setVisibility(View.VISIBLE);
+                holder.playAlbumButton.setText("Hide Songs");
+
+                // Tạo adapter và gán vào RecyclerView
+                songAdapter = new SongAdapter(song -> {
+                    // Xử lý khi bài hát được chọn
+                });
+                Log.d("AlbumAdapter", "Album Songs: " + album.getSongs().size());
+                songAdapter.setSongs(album.getSongs());
+                holder.recyclerViewSong.setAdapter(songAdapter);
+            } else {
+                holder.songListContainer.setVisibility(View.GONE);
+                holder.playAlbumButton.setText("Show Songs");
+            }
+        });
+
     }
+
     @Override
     public int getItemCount() {
         return albums.size();
     }
-
 }

@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hd.muzik.R;
 import com.hd.muzik.fragments.SongDetailFragment;
 import com.hd.muzik.model.Song;
-import com.hd.muzik.services.OnSongClickListener;
 import com.hd.muzik.utils.MusicPlayerUtils;
+import com.hd.muzik.utils.OnSongClickListener;
 
 
 import java.util.ArrayList;

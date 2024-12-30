@@ -16,8 +16,8 @@ import android.view.ViewGroup;
 import com.hd.muzik.R;
 import com.hd.muzik.adapter.SongListAdapter;
 import com.hd.muzik.model.Song;
-import com.hd.muzik.services.OnSongClickListener;
 import com.hd.muzik.services.SongListViewModel;
+import com.hd.muzik.utils.OnSongClickListener;
 
 /**
  * A simple {@link Fragment} subclass.

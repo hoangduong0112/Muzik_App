@@ -16,7 +16,6 @@ import com.hd.muzik.utils.OnSongClickListener;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
     private List<Song> songs = new ArrayList<>();
     private final OnSongClickListener listener;
@@ -25,6 +24,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
         this.listener = listener;
     }
 
+    // Phương thức để cập nhật danh sách bài hát
     @SuppressLint("NotifyDataSetChanged")
     public void setSongs(List<Song> newSongs) {
         this.songs.clear();
@@ -36,7 +36,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
     @Override
     public SongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_song, parent, false);
-        return new SongViewHolder(view);
+        return new SongViewHolder(view, listener);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
         holder.artist.setText(song.getArtistName());
         holder.itemView.setOnClickListener(v -> {
             listener.onSongClick(song);
-            MusicPlayerUtils.playSong(holder.itemView.getContext(), song.getSongUrl());
+            MusicPlayerUtils.playSong(holder.itemView.getContext(), song);
         });
     }
 
