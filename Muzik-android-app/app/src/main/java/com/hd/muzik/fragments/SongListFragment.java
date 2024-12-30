@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.hd.muzik.R;
 import com.hd.muzik.adapter.SongListAdapter;
@@ -38,7 +39,7 @@ public class SongListFragment extends Fragment {
     private RecyclerView recyclerView;
     private SongListAdapter songListAdapter;
     private OnSongClickListener onSongClickListener;
-
+    private ImageButton btnAddToPlaylist;
     public SongListFragment() {
         // Required empty public constructor
     }
@@ -91,6 +92,7 @@ public class SongListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_song_list, container, false);
 
+
         recyclerView = view.findViewById(R.id.recycler_view_song);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -104,6 +106,7 @@ public class SongListFragment extends Fragment {
                 songListAdapter.setSongs(songs);
             }
         });
+
 
         songListViewModel.fetchSongs();
 

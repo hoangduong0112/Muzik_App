@@ -53,6 +53,15 @@
                 android:textColor="@android:color/darker_gray"
                 android:textSize="14sp" />
 
+            <!-- Add to Playlist button -->
+            <ImageButton
+                android:id="@+id/btn_song_add_to_playlist"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Add to playlist"
+                android:src="@drawable/add_24dp_000000_fill0_wght400_grad0_opsz24" />
         </LinearLayout>
     </LinearLayout>
     <com.google.android.material.divider.MaterialDivider

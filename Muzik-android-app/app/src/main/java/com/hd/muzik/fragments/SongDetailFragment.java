@@ -117,7 +117,11 @@ public class SongDetailFragment extends Fragment implements MusicPlayerUtils.Mus
 
 
     private void togglePlayPause() {
-        MusicPlayerUtils.togglePlayPause(requireContext()); // Thay đổi trạng thái play/pause trong MusicPlayerUtils
+        boolean newState = !MusicPlayerUtils.isPlaying(); // Lấy trạng thái mới
+        MusicPlayerUtils.togglePlayPause(requireContext());
+
+        // Cập nhật ViewModel với trạng thái mới
+        musicPlayerViewModel.setIsPlaying(newState);
     }
 
 

@@ -14,6 +14,8 @@ import com.hd.muzik.R;
 import com.hd.muzik.model.Album;
 import com.hd.muzik.model.Song;
 import com.hd.muzik.utils.ImageLoader;
+import com.hd.muzik.utils.MusicPlayerUtils;
+import com.hd.muzik.utils.OnSongClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,12 @@ import java.util.List;
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder> {
     private List<Album> albums = new ArrayList<>();
     private SongAdapter songAdapter; // Để chứa và quản lý danh sách bài hát
+    private final OnSongClickListener listener;
 
+
+    public AlbumAdapter(OnSongClickListener listener) {
+        this.listener = listener;
+    }
     @SuppressLint("NotifyDataSetChanged")
     public void setAlbums(List<Album> newAlbums) {
         this.albums.clear();
@@ -53,9 +60,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder> {
                 holder.playAlbumButton.setText("Hide Songs");
 
                 // Tạo adapter và gán vào RecyclerView
-                songAdapter = new SongAdapter(song -> {
-                    // Xử lý khi bài hát được chọn
-                });
+                songAdapter = new SongAdapter(listener);
                 Log.d("AlbumAdapter", "Album Songs: " + album.getSongs().size());
                 songAdapter.setSongs(album.getSongs());
                 holder.recyclerViewSong.setAdapter(songAdapter);

@@ -1,6 +1,7 @@
 package com.hd.muzik.activities;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.window.OnBackInvokedDispatcher;
 
 import androidx.activity.OnBackPressedCallback;
@@ -24,16 +26,22 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.hd.muzik.R;
 import com.hd.muzik.adapter.MainViewPaperAdapter;
+import com.hd.muzik.adapter.PlaylistListAdapter;
 import com.hd.muzik.fragments.ProfileFragment;
 import com.hd.muzik.fragments.SongDetailFragment;
+import com.hd.muzik.model.Playlist;
 import com.hd.muzik.model.Song;
 import com.hd.muzik.services.MusicPlayerViewModel;
+import com.hd.muzik.services.PlaylistViewModel;
+import com.hd.muzik.services.PlaylistViewModelFactory;
 import com.hd.muzik.utils.MusicPlayerUtils;
 import com.hd.muzik.utils.OnSongClickListener;
 import com.hd.muzik.utils.TokenManager;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements
-        OnSongClickListener, ProfileFragment.LogoutListener {
+        OnSongClickListener, ProfileFragment.LogoutListener{
     private MaterialToolbar topAppBar;
     private BottomNavigationView bottomNavigationView;
     private ViewPager2 viewPager;
@@ -43,9 +51,11 @@ public class MainActivity extends AppCompatActivity implements
     private ImageButton playPauseButton;
     private LinearLayout playerController;
     private MainViewPaperAdapter adapter;
+    private PlaylistListAdapter playlistListAdapter;
     private TokenManager tokenManager;
-
+    private PlaylistViewModel playlistViewModel;
     private MusicPlayerViewModel musicPlayerViewModel;
+
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +95,17 @@ public class MainActivity extends AppCompatActivity implements
                 } else {
                     playPauseButton.setImageResource(R.drawable.play_arrow_24dp_000000_fill0_wght400_grad0_opsz24);
                 }
+                musicPlayerViewModel.setIsPlaying(isPlaying);
             }
         });
+        musicPlayerViewModel.getIsPlaying().observe(this, isPlaying -> {
+            if (isPlaying != null) {
+                playPauseButton.setImageResource(isPlaying
+                        ? R.drawable.pause_24dp_000000_fill0_wght400_grad0_opsz24
+                        : R.drawable.play_arrow_24dp_000000_fill0_wght400_grad0_opsz24);
+            }
+        });
+
 
         playPauseButton.setOnClickListener(v -> togglePlayPause());
 
@@ -105,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
+
     }
 
     private void initUI() {
@@ -120,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(topAppBar);
         tokenManager = new TokenManager(this);
 
-        // Initialize the class-level adapter instead of declaring a local one
         adapter = new MainViewPaperAdapter(this);
         viewPager.setAdapter(adapter);  // Set the adapter to the viewPager
 
@@ -134,10 +153,10 @@ public class MainActivity extends AppCompatActivity implements
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
-                case R.id.nav_search:
+                case R.id.nav_library:
                     viewPager.setCurrentItem(1);
                     break;
-                case R.id.nav_library:
+                case R.id.nav_search:
                     viewPager.setCurrentItem(2);
                     break;
                 case R.id.nav_profile:
@@ -159,10 +178,10 @@ public class MainActivity extends AppCompatActivity implements
                         bottomNavigationView.setSelectedItemId(R.id.nav_home);
                         break;
                     case 1:
-                        bottomNavigationView.setSelectedItemId(R.id.nav_search);
+                        bottomNavigationView.setSelectedItemId(R.id.nav_library);
                         break;
                     case 2:
-                        bottomNavigationView.setSelectedItemId(R.id.nav_library);
+                        bottomNavigationView.setSelectedItemId(R.id.nav_search);
                         break;
                     case 3:
                         bottomNavigationView.setSelectedItemId(R.id.nav_profile);
@@ -228,11 +247,17 @@ public class MainActivity extends AppCompatActivity implements
         showPlayer(song);
     }
 
+    @Override
+    public void onAddToPlaylist(Song song) {
+
+    }
+
+
     private void updatePlayerUI(Song song, boolean isPlaying) {
-        if (song == null) return; // Tránh lỗi nếu song là null
+        if (song == null) return;
         songTitle.setText(song.getName());
         artistName.setText(song.getArtistName());
-        albumArt.setImageResource(R.drawable.avt_default); // Thay bằng ảnh album thực tế nếu có
+        albumArt.setImageResource(R.drawable.avt_default);
         playPauseButton.setImageResource(isPlaying ?
                 R.drawable.pause_24dp_000000_fill0_wght400_grad0_opsz24 :
                 R.drawable.play_arrow_24dp_000000_fill0_wght400_grad0_opsz24);

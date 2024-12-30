@@ -13,7 +13,7 @@ import com.hd.muzik.fragments.AlbumFragment;
 import com.hd.muzik.fragments.ArtistFragment;
 import com.hd.muzik.fragments.AuthRequireFragment;
 import com.hd.muzik.fragments.HomeFragment;
-import com.hd.muzik.fragments.PlaylistFragment;
+import com.hd.muzik.fragments.PlaylistListFragment;
 import com.hd.muzik.fragments.ProfileFragment;
 import com.hd.muzik.fragments.SearchFragment;
 import com.hd.muzik.fragments.SongDetailFragment;
@@ -45,9 +45,9 @@ public class MainViewPaperAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 1:
-                return new SearchFragment();
+                return isTokenValid ? new PlaylistListFragment() : new AuthRequireFragment();
             case 2:
-                return isTokenValid ? new PlaylistFragment() : new AuthRequireFragment();
+                return new SearchFragment();
             case 3:
                 return isTokenValid ? new ProfileFragment() : new AuthRequireFragment();
             default:

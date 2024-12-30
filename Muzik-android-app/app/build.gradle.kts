@@ -57,6 +57,8 @@ dependencies {
     runtimeOnly("com.google.android.material:material:1.12.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.github.bumptech.glide:annotations:4.16.0")
+    runtimeOnly("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    runtimeOnly("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
 
 
 }

@@ -1,7 +1,9 @@
 package com.hd.muzik.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -15,6 +17,8 @@ import com.hd.muzik.R;
 import com.hd.muzik.adapter.AlbumAdapter;
 import com.hd.muzik.adapter.AlbumViewHolder;
 import com.hd.muzik.services.AlbumViewModel;
+import com.hd.muzik.services.MusicPlayerViewModel;
+import com.hd.muzik.utils.OnSongClickListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,10 +35,13 @@ public class AlbumFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private OnSongClickListener onSongClickListener;
+
 
     private RecyclerView recyclerView;
     private AlbumAdapter albumAdapter;
-    private AlbumViewHolder albumViewHolder;
+    private MusicPlayerViewModel musicPlayerViewModel;
+
     public AlbumFragment() {
         // Required empty public constructor
     }
@@ -68,6 +75,21 @@ public class AlbumFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnSongClickListener) {
+            onSongClickListener = (OnSongClickListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement OnSongClickListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        onSongClickListener = null;
+    }
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_album_list, container, false);
 
@@ -75,12 +97,12 @@ public class AlbumFragment extends Fragment {
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);  // 2 cột
         recyclerView.setLayoutManager(layoutManager);
 
-
+        musicPlayerViewModel = new ViewModelProvider(requireActivity()).get(MusicPlayerViewModel.class);
         AlbumViewModel albumViewModel = new ViewModelProvider(this).get(AlbumViewModel.class);
         albumViewModel.getAlbums().observe(getViewLifecycleOwner(), albums -> {
             if (albums != null) {
                 if (albumAdapter == null) {
-                    albumAdapter = new AlbumAdapter();
+                    albumAdapter = new AlbumAdapter(onSongClickListener);
                     recyclerView.setAdapter(albumAdapter);
                 }
             }
@@ -88,7 +110,7 @@ public class AlbumFragment extends Fragment {
         });
         albumViewModel.fetchAlbums();
         return view;
-    }
+    }   
 
 
 }

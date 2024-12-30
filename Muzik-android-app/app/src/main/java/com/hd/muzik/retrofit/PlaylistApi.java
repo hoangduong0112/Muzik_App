@@ -28,7 +28,7 @@ public interface PlaylistApi {
     Call<Playlist> updatePlaylist(@Body PlaylistRequest playlistRequest, @Path("id") int id);
 
     @DELETE("api/playlist/{id}")
-    Call<ResponseBody> deletePlaylist(@Path("id") int id);
+    Call<Void> deletePlaylist(@Path("id") int id);
 
     @PATCH("api/playlist/{playlistId}/song/{songId}")
     Call<Playlist>  addSongToPlaylist(@Path("playlistId") int playlistId, @Path("songId") int songId);

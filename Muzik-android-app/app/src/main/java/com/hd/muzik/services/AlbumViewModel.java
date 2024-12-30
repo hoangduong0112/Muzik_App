@@ -23,7 +23,7 @@ public class AlbumViewModel extends ViewModel {
     public LiveData<List<Album>> getAlbums() {
         return albums;
     }
-
+    
     public void fetchAlbums() {
         AlbumApi albumApi = RetrofitInstance.getInstance().create(AlbumApi.class);
         albumApi.getAlbum().enqueue(new Callback<List<Album>>() {

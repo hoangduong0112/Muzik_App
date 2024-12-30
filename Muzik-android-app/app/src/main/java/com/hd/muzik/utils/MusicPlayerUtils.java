@@ -5,7 +5,11 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.hd.muzik.model.Song;
+import com.hd.muzik.services.MusicPlayerViewModel;
 
 import lombok.Getter;
 
@@ -107,6 +111,9 @@ public class MusicPlayerUtils {
                 resumeSong(); // Tiếp tục bài hát nếu đang dừng
             }
         }
+        MusicPlayerViewModel viewModel = new ViewModelProvider((FragmentActivity) context)
+                .get(MusicPlayerViewModel.class);
+        viewModel.setIsPlaying(isPlaying());
     }
     public static int getDuration() {
         if (mediaPlayer != null) {
