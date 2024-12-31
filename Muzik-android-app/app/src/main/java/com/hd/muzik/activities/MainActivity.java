@@ -28,6 +28,7 @@ import com.hd.muzik.R;
 import com.hd.muzik.adapter.MainViewPaperAdapter;
 import com.hd.muzik.adapter.PlaylistListAdapter;
 import com.hd.muzik.fragments.ProfileFragment;
+import com.hd.muzik.fragments.SelectedPlayListFragment;
 import com.hd.muzik.fragments.SongDetailFragment;
 import com.hd.muzik.model.Playlist;
 import com.hd.muzik.model.Song;
@@ -249,7 +250,8 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onAddToPlaylist(Song song) {
-
+        SelectedPlayListFragment dialog = SelectedPlayListFragment.newInstance(song.getId());
+        dialog.show(getSupportFragmentManager(), "SelectPlaylistDialog");
     }
 
 

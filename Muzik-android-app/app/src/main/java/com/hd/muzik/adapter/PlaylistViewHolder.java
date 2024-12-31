@@ -2,6 +2,7 @@ package com.hd.muzik.adapter;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,7 +16,7 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder {
     RecyclerView recyclerViewPlaylist, recyclerViewSong;
     TextView name, title_song, artist;
     FloatingActionButton addNewPlaylist;
-    Button btnUpdatePlaylist, btnDelPlaylist;
+    ImageButton btnUpdatePlaylist, btnDelPlaylist;
     public PlaylistViewHolder(@NonNull View itemView) {
         super(itemView);
 

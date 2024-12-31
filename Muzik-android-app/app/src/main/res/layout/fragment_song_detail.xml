@@ -4,86 +4,95 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@android:color/white">
 
+    <!-- Album Cover -->
     <ImageView
         android:id="@+id/song_detail_image"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
         android:layout_gravity="center"
         android:src="@drawable/avt_default"
         android:contentDescription="@string/song_title"
-        android:layout_marginBottom="16dp" />
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/circle_background" />
 
+    <!-- Song Title -->
     <TextView
         android:id="@+id/song_detail_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="@android:color/black"
         android:gravity="center"
         android:text="Thiên lý ơi"
+        android:textColor="@android:color/black"
+        android:textSize="22sp"
+        android:textStyle="bold"
         android:layout_marginBottom="8dp" />
 
+    <!-- Artist Name -->
     <TextView
         android:id="@+id/song_detail_artist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textColor="@android:color/darker_gray"
         android:gravity="center"
         android:text="J97"
-        android:layout_marginBottom="16dp" />
+        android:textColor="@android:color/darker_gray"
+        android:textSize="16sp"
+        android:layout_marginBottom="24dp" />
 
+    <!-- Progress Bar -->
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progress_indicator"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:progress="0"
-        app:indicatorColor="@color/tea_200"
-        app:trackColor="@android:color/darker_gray" />
+        android:layout_height="8dp"
+        android:layout_marginBottom="24dp"
+        app:indicatorColor="@color/red"
+        app:trackColor="@color/material_dynamic_secondary0" />
 
-    <!-- Control buttons -->
+    <!-- Control Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="24dp">
 
-        <!-- Favorite button -->
+        <!-- Favorite -->
         <ImageButton
             android:id="@+id/button_favorite"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/favorite_24dp_000000_fill0_wght400_grad0_opsz24"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/favorite" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/favorite"
+            app:tint="@color/primaryDarker" />
 
-        <!-- Play/Pause button -->
+        <!-- Play/Pause -->
         <ImageButton
             android:id="@+id/button_play_pause"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:src="@drawable/play_arrow_24dp_000000_fill0_wght400_grad0_opsz24"
-            android:background="@android:color/transparent"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/play_button"
+            app:tint="@color/primaryDarker"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp" />
 
-        <!-- Repeat button -->
+        <!-- Repeat -->
         <ImageButton
-            style="?attr/materialIconButtonStyle"
             android:id="@+id/button_repeat"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/repeat_one_24dp_000000_fill0_wght400_grad0_opsz24"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/repeat" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/repeat"
+            app:tint="@color/primaryDarker" />
     </LinearLayout>
 
-    <!-- Genres -->
+    <!-- Song Genres -->
     <TextView
         android:id="@+id/song_detail_genres"
         android:layout_width="match_parent"
@@ -91,5 +100,31 @@
         android:gravity="center"
         android:text="Chill, Party, Icona Pop, Bass"
         android:textColor="@android:color/black"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Like Count -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/heart_check_24dp_000000_fill0_wght400_grad0_opsz24"
+            app:tint="@android:color/darker_gray"
+            android:contentDescription="Song like" />
+
+        <TextView
+            android:id="@+id/song_like_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="100K likes"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="14sp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
 </LinearLayout>

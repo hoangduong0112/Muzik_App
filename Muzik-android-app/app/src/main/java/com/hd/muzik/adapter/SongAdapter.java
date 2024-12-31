@@ -48,6 +48,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
             listener.onSongClick(song);
             MusicPlayerUtils.playSong(holder.itemView.getContext(), song);
         });
+
+        holder.btnAddToPlaylist.setOnClickListener(view -> {
+            listener.onAddToPlaylist(song);
+        });
     }
 
     @Override

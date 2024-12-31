@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.hd.muzik.model.Playlist;
 import com.hd.muzik.model.PlaylistRequest;
+import com.hd.muzik.model.Song;
 import com.hd.muzik.retrofit.PlaylistApi;
 import com.hd.muzik.retrofit.RetrofitInstance;
 import com.hd.muzik.utils.TokenManager;
@@ -32,6 +33,7 @@ public class PlaylistViewModel extends ViewModel {
 
     public PlaylistViewModel(Context context) {
         this.context = context.getApplicationContext();
+        fetchPlaylists();
     }
 
     public void fetchPlaylists(){
@@ -130,7 +132,7 @@ public class PlaylistViewModel extends ViewModel {
             }
         });
     }
-    public void addSongToPlaylist(int playlistId, int songId) {
+    public void addSongToPlaylist(int songId, int playlistId) {
         PlaylistApi playlistApi = RetrofitInstance.getInstanceWithAuth(context).create(PlaylistApi.class);
 
         playlistApi.addSongToPlaylist(playlistId, songId).enqueue(new Callback<Playlist>() {
@@ -139,20 +141,20 @@ public class PlaylistViewModel extends ViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     Playlist updatedPlaylist = response.body();
 
-                    // Cập nhật danh sách playlists trong LiveData
+                    // Cập nhật danh sách playlist
                     List<Playlist> currentPlaylists = playlists.getValue();
                     if (currentPlaylists != null) {
                         for (int i = 0; i < currentPlaylists.size(); i++) {
                             if (currentPlaylists.get(i).getId() == playlistId) {
-                                currentPlaylists.set(i, updatedPlaylist); // Thay thế playlist cũ bằng playlist mới
+                                currentPlaylists.set(i, updatedPlaylist); // Cập nhật playlist
                                 break;
                             }
                         }
                         playlists.postValue(currentPlaylists); // Thông báo LiveData
                     }
 
-                    // Thông báo cho người dùng
-                    Toast.makeText(context, "Song added to playlist!", Toast.LENGTH_SHORT).show();
+                    // Hiển thị thông báo
+                    Toast.makeText(context, "Song added to playlist successfully!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(context, "Failed to add song to playlist", Toast.LENGTH_SHORT).show();
                 }
@@ -163,20 +165,6 @@ public class PlaylistViewModel extends ViewModel {
                 Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-
-    public void updatePlaylist(Playlist updatedPlaylist) {
-        List<Playlist> currentPlaylists = playlists.getValue();
-        if (currentPlaylists != null) {
-            for (int i = 0; i < currentPlaylists.size(); i++) {
-                if (currentPlaylists.get(i).getId() == updatedPlaylist.getId()) {
-                    currentPlaylists.set(i, updatedPlaylist); // Cập nhật playlist
-                    break;
-                }
-            }
-            playlists.postValue(currentPlaylists); // Cập nhật LiveData
-        }
     }
 
 

@@ -112,4 +112,11 @@ public class SongListFragment extends Fragment {
 
         return view;
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        SongListViewModel songListViewModel = new ViewModelProvider(this).get(SongListViewModel.class);
+        songListViewModel.fetchSongs();
+    }
+
 }

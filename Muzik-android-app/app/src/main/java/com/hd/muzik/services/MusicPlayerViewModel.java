@@ -10,7 +10,14 @@ public class MusicPlayerViewModel extends ViewModel {
     private final MutableLiveData<Song> currentSong = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isPlaying = new MutableLiveData<>();
     private final MutableLiveData<Integer> progress = new MutableLiveData<>();
+    private MutableLiveData<Boolean> isFavorite = new MutableLiveData<>();
+    public LiveData<Boolean> getIsFavorite() {
+        return isFavorite;
+    }
 
+    public void setIsFavorite(boolean favorite) {
+        isFavorite.setValue(favorite);
+    }
     public LiveData<Song> getCurrentSong() {
         return currentSong;
     }

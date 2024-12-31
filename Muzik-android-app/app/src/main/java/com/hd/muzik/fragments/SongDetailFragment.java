@@ -51,7 +51,7 @@ public class SongDetailFragment extends Fragment implements MusicPlayerUtils.Mus
     private MusicPlayerViewModel musicPlayerViewModel;
     private boolean isRepeat = false;
     private boolean isFavorite = false;
-    private ImageButton buttonPlayPause;
+    private ImageButton buttonPlayPause, buttonFavorite;
     public SongDetailFragment() {
         // Required empty public constructor
     }
@@ -84,14 +84,17 @@ public class SongDetailFragment extends Fragment implements MusicPlayerUtils.Mus
 
         TextView songTitle = view.findViewById(R.id.song_detail_title);
         TextView songArtist = view.findViewById(R.id.song_detail_artist);
+        TextView likeCount = view.findViewById(R.id.song_like_count);
         buttonPlayPause = view.findViewById(R.id.button_play_pause);
         LinearProgressIndicator progressIndicator = view.findViewById(R.id.progress_indicator);
-
+        buttonFavorite = view.findViewById(R.id.button_favorite);
         // Lắng nghe thay đổi từ ViewModel
         musicPlayerViewModel.getCurrentSong().observe(getViewLifecycleOwner(), song -> {
             if (song != null) {
                 songTitle.setText(song.getName());
                 songArtist.setText(song.getArtistName());
+                likeCount.setText(String.valueOf(song.getLikeCount() + " likes"));
+                checkSongLiked(song.getId(), buttonFavorite);
             }
         });
 
@@ -111,6 +114,7 @@ public class SongDetailFragment extends Fragment implements MusicPlayerUtils.Mus
         MusicPlayerUtils.setMusicPlayerListener(this);
 
         buttonPlayPause.setOnClickListener(v -> togglePlayPause());
+        buttonFavorite.setOnClickListener(v -> toggleFavorite(buttonFavorite));
 
         return view;
     }
@@ -129,12 +133,6 @@ public class SongDetailFragment extends Fragment implements MusicPlayerUtils.Mus
         isRepeat = !isRepeat;
         button.setImageResource(isRepeat ? R.drawable.repeat_24dp_000000_fill0_wght400_grad0_opsz24
                 : R.drawable.repeat_one_24dp_000000_fill0_wght400_grad0_opsz24);
-    }
-
-    private void toggleFavorite(ImageButton button) {
-        isFavorite = !isFavorite;
-        button.setImageResource(isFavorite ? R.drawable.heart_check_24dp_000000_fill0_wght400_grad0_opsz24
-                : R.drawable.favorite_24dp_000000_fill0_wght400_grad0_opsz24);
     }
 
     @Override
@@ -172,5 +170,50 @@ public class SongDetailFragment extends Fragment implements MusicPlayerUtils.Mus
         } else {
             buttonPlayPause.setImageResource(R.drawable.play_arrow_24dp_000000_fill0_wght400_grad0_opsz24);
         }
+    }
+
+    private void checkSongLiked(int songId, ImageButton buttonFavorite) {
+        SongApi songApi = RetrofitInstance.getInstanceWithAuth(getContext()).create(SongApi.class);
+        songApi.checkLiked(songId).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    isFavorite = response.body();
+                    buttonFavorite.setImageResource(isFavorite
+                            ? R.drawable.heart_check_24dp_000000_fill0_wght400_grad0_opsz24
+                            : R.drawable.favorite_24dp_000000_fill0_wght400_grad0_opsz24);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                // Xử lý lỗi nếu cần
+            }
+        });
+    }
+
+    private void toggleFavorite(ImageButton buttonFavorite) {
+        SongApi songApi = RetrofitInstance.getInstanceWithAuth(getContext()).create(SongApi.class);
+        int songId = musicPlayerViewModel.getCurrentSong().getValue().getId();
+
+        songApi.likeSong(songId).enqueue(new Callback<Song>() {
+            @Override
+            public void onResponse(Call<Song> call, Response<Song> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    isFavorite = !isFavorite;
+                    buttonFavorite.setImageResource(isFavorite
+                            ? R.drawable.heart_check_24dp_000000_fill0_wght400_grad0_opsz24
+                            : R.drawable.favorite_24dp_000000_fill0_wght400_grad0_opsz24);
+
+                    musicPlayerViewModel.setCurrentSong(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Song> call, Throwable t) {
+
+            }
+        });
+        musicPlayerViewModel.setIsFavorite(isFavorite);
     }
 }

@@ -41,7 +41,5 @@ public class SongViewHolder extends RecyclerView.ViewHolder {
             }
         });
 
-
-
     }
 }

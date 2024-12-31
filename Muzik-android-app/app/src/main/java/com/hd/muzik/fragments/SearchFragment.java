@@ -2,13 +2,30 @@ package com.hd.muzik.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.google.android.material.search.SearchBar;
+import com.google.android.material.search.SearchView;
 import com.hd.muzik.R;
+import com.hd.muzik.adapter.SongListAdapter;
+import com.hd.muzik.model.Song;
+import com.hd.muzik.services.SongListViewModel;
+import com.hd.muzik.utils.OnSongClickListener;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,33 +34,21 @@ import com.hd.muzik.R;
  */
 public class SearchFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private SongListViewModel songListViewModel;
+    private SongListAdapter songListAdapter;
+    private OnSongClickListener onSongClickListener;
+    private RecyclerView recyclerView;
+    private TextView noResultsTextView;
 
     public SearchFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SearchFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static SearchFragment newInstance(String param1, String param2) {
         SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString("param1", param1);
+        args.putString("param2", param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,15 +57,62 @@ public class SearchFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            // Retrieve parameters (if needed)
         }
     }
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
+
+        songListViewModel = new ViewModelProvider(this).get(SongListViewModel.class);
+
+
+        recyclerView = view.findViewById(R.id.recycler_view_search_results);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        songListAdapter = new SongListAdapter(onSongClickListener);
+        recyclerView.setAdapter(songListAdapter);
+
+        noResultsTextView = view.findViewById(R.id.tv_no_results);
+
+        songListViewModel.getSongs().observe(getViewLifecycleOwner(), songs -> updateUI(songs));
+
+        SearchBar searchBar = view.findViewById(R.id.search_bar);
+        SearchView searchView = view.findViewById(R.id.search_view);
+
+        searchView.setupWithSearchBar(searchBar);
+        searchView.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String query = editable.toString().trim();
+                if (!query.isEmpty()) {
+                    songListViewModel.fetchSongsByKw(query);
+                }
+            }
+        });
+
+        return view;
+    }
+
+    private void updateUI(List<Song> songs) {
+        if (songs == null || songs.isEmpty()) {
+            recyclerView.setVisibility(View.GONE);
+            noResultsTextView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            noResultsTextView.setVisibility(View.GONE);
+            songListAdapter.setSongs(songs);
+        }
     }
 }

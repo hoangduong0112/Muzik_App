@@ -157,7 +157,7 @@ public class PlaylistListFragment extends Fragment implements PlaylistListAdapte
                 createPlaylist(playlistName);
                 dialog.dismiss();
             } else {
-                Toast.makeText(getContext(), "Please enter a playlist name", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Lỗi tạo mới", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -171,17 +171,14 @@ public class PlaylistListFragment extends Fragment implements PlaylistListAdapte
         EditText etPlaylistName = dialogView.findViewById(R.id.et_playlist_name);
         Button btnUpdate = dialogView.findViewById(R.id.btn_create_playlist);
 
-        // Đặt tên hiện tại vào EditText
         etPlaylistName.setText(playlist.getName());
 
-        // Tạo AlertDialog
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setView(dialogView)
                 .setTitle("Update Playlist")
                 .setCancelable(true)
                 .create();
 
-        // Đổi text của nút thành "Update"
         btnUpdate.setText("Update");
         btnUpdate.setOnClickListener(v -> {
             String updatedName = etPlaylistName.getText().toString().trim();
@@ -189,7 +186,7 @@ public class PlaylistListFragment extends Fragment implements PlaylistListAdapte
                 playlistViewModel.updatePlaylist(playlist.getId(), updatedName);
                 dialog.dismiss();
             } else {
-                Toast.makeText(getContext(), "Please enter a valid playlist name", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Lỗi update", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -199,8 +196,8 @@ public class PlaylistListFragment extends Fragment implements PlaylistListAdapte
     @Override
     public void onDeletePlaylist(Playlist playlist) {
         new AlertDialog.Builder(getContext())
-                .setTitle("Delete Playlist")
-                .setMessage("Are you sure you want to delete this playlist?")
+                .setTitle("Xóa Playlist")
+                .setMessage("Bạn có muốn xóa playlist này không?")
                 .setPositiveButton("Yes", (dialog, which) -> {
                     playlistViewModel.deletePlaylist(playlist.getId());
                     Toast.makeText(getContext(), "Playlist deleted", Toast.LENGTH_SHORT).show();
@@ -209,4 +206,9 @@ public class PlaylistListFragment extends Fragment implements PlaylistListAdapte
                 .show();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        playlistViewModel.fetchPlaylists();
+    }
 }
